@@ -27,14 +27,23 @@ fi
 
 # pip bootstrappen falls nicht vorhanden
 if [ ! -f ".venv/bin/pip" ]; then
+    echo "pip wird installiert..."
     .venv/bin/python3 -m ensurepip --upgrade 2>/dev/null || {
-        echo
-        echo "FEHLER: pip konnte nicht installiert werden."
-        echo "Bitte einmalig ausführen:"
-        echo "  sudo apt install python3-pip"
-        echo "Danach erneut: ./install.sh"
-        rm -rf .venv
-        exit 1
+        echo "pip wird von bootstrap.pypa.io geladen..."
+        if command -v curl &>/dev/null; then
+            curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+        elif command -v wget &>/dev/null; then
+            wget -q https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
+        else
+            echo "FEHLER: curl oder wget nicht gefunden."
+            rm -rf .venv
+            exit 1
+        fi
+        .venv/bin/python3 /tmp/get-pip.py || {
+            echo "FEHLER: pip konnte nicht installiert werden."
+            rm -rf .venv
+            exit 1
+        }
     }
 fi
 
