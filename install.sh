@@ -25,10 +25,17 @@ else
     python3 -m venv .venv
 fi
 
-# pip bootstrappen falls nicht vorhanden (Ubuntu ohne python3-pip)
+# pip bootstrappen falls nicht vorhanden
 if [ ! -f ".venv/bin/pip" ]; then
-    echo "pip wird nachinstalliert..."
-    .venv/bin/python3 -m ensurepip --upgrade
+    .venv/bin/python3 -m ensurepip --upgrade 2>/dev/null || {
+        echo
+        echo "FEHLER: pip konnte nicht installiert werden."
+        echo "Bitte einmalig ausführen:"
+        echo "  sudo apt install python3-pip"
+        echo "Danach erneut: ./install.sh"
+        rm -rf .venv
+        exit 1
+    }
 fi
 
 # Pakete installieren
