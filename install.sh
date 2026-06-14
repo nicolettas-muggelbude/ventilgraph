@@ -37,5 +37,5 @@ echo "Pakete werden installiert..."
 .venv/bin/pip install -r requirements.txt
 
 echo
-echo "Installation abgeschlossen!"
-echo "Zum Starten: ./start.sh"
+echo "Installation abgeschlossen - App wird gestartet..."
+exec "$(dirname "$0")/start.sh"
