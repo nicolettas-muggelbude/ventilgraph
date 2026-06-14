@@ -9,12 +9,9 @@ if not exist ".venv" (
     exit /b 1
 )
 
-:: Läuft der Server bereits? → nur Browser öffnen
-powershell -Command "try{(Invoke-WebRequest http://localhost:8050/ -UseBasicParsing -TimeoutSec 1).StatusCode}catch{0}" | find "200" >nul 2>&1
-if %errorlevel%==0 (
-    start http://localhost:8050
-    exit /b 0
-)
+:: Läuft der Server bereits? → beenden
+for /f "tokens=5" %%p in ('netstat -ano ^| find "0.0.0.0:8050" 2^>nul') do taskkill /PID %%p /F >nul 2>&1
+for /f "tokens=5" %%p in ('netstat -ano ^| find "127.0.0.1:8050" 2^>nul') do taskkill /PID %%p /F >nul 2>&1
 
 :: Server minimiert starten
 start /min "Ventilgraph" .venv\Scripts\python app.py

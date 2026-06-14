@@ -10,11 +10,9 @@ if [ ! -d ".venv" ]; then
     exit 1
 fi
 
-# Läuft der Server bereits? → nur Browser öffnen
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:8050/ 2>/dev/null | grep -q "200"; then
-    xdg-open http://localhost:8050 2>/dev/null || open http://localhost:8050 2>/dev/null || true
-    exit 0
-fi
+# Läuft der Server bereits? → beenden
+pkill -f "python.*app.py" 2>/dev/null || true
+sleep 1
 
 # Server im Hintergrund starten
 nohup .venv/bin/python app.py > /tmp/ventilgraph.log 2>&1 &
