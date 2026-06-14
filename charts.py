@@ -3,65 +3,88 @@ from plotly.subplots import make_subplots
 import pandas as pd
 
 _VALVE_COLORS = [
-    'rgba(33,150,243,0.85)',   # blau
-    'rgba(76,175,80,0.85)',    # grün
-    'rgba(255,152,0,0.85)',    # orange
-    'rgba(156,39,176,0.85)',   # lila
-    'rgba(244,67,54,0.85)',    # rot
-    'rgba(0,188,212,0.85)',    # cyan
-    'rgba(139,195,74,0.85)',   # hellgrün
-    'rgba(255,87,34,0.85)',    # tiefrot
-    'rgba(63,81,181,0.85)',    # indigo
-    'rgba(0,150,136,0.85)',    # teal
-    'rgba(255,193,7,0.85)',    # gelb
-    'rgba(233,30,99,0.85)',    # pink
+    '#2196F3', '#4CAF50', '#FF9800', '#9C27B0', '#F44336',
+    '#00BCD4', '#8BC34A', '#FF5722', '#3F51B5', '#009688',
+    '#FFC107', '#E91E63',
 ]
 _ANALOG_COLORS = [
     '#E53935', '#1E88E5', '#43A047', '#FB8C00',
     '#8E24AA', '#00ACC1', '#6D4C41', '#546E7A',
 ]
 
-_BAR = 0.82   # Füllhöhe pro Ventilzeile (0.0 = AUS, _BAR = EIN)
-_BG = '#16213e'
+_BG   = '#16213e'
 _GRID = '#2a3a5c'
+_ROW_H = 0.80   # Balkenhöhe innerhalb einer Ventilzeile (0..1)
+_PAD   = 0.10   # Abstand oben und unten
+
+
+def _on_periods(series: pd.Series) -> list[tuple]:
+    """Gibt (start, end) für alle EIN-Perioden zurück."""
+    vals = series.ffill().fillna(0).astype(int)
+    periods, start = [], None
+    for t, v in zip(series.index, vals):
+        if v == 1 and start is None:
+            start = t
+        elif v == 0 and start is not None:
+            periods.append((start, t))
+            start = None
+    if start is not None:
+        periods.append((start, series.index[-1]))
+    return periods
+
+
+def _rect_trace(periods, row_i, color, name) -> go.Scatter:
+    """Einzelner Scatter-Trace mit allen EIN-Rechtecken (None-Trenner)."""
+    x, y = [], []
+    y0, y1 = row_i + _PAD, row_i + _PAD + _ROW_H
+    for t0, t1 in periods:
+        x += [t0, t0, t1, t1, t0, None]
+        y += [y0, y1, y1, y0, y0, None]
+    return go.Scatter(
+        x=x, y=y,
+        mode='lines', fill='toself',
+        fillcolor=color, line=dict(width=0, color=color),
+        name=name, showlegend=True, hoverinfo='skip',
+    )
+
+
+def _hover_trace(df_col: pd.Series, row_i: int, name: str, show_legend: bool) -> go.Scatter:
+    """Unsichtbare Linie in Zeilenmitte – liefert Hover-Text."""
+    state = df_col.fillna(0).astype(int).map({0: 'AUS', 1: 'EIN'})
+    return go.Scatter(
+        x=df_col.index,
+        y=[row_i + _PAD + _ROW_H / 2] * len(df_col),
+        mode='lines', line=dict(width=0),
+        customdata=state,
+        hovertemplate='%{customdata}<extra>' + name + '</extra>',
+        name=name, showlegend=show_legend,
+    )
 
 
 def build_figure(df: pd.DataFrame, valves: list[str], analogs: list[str]) -> go.Figure:
     n = len(valves)
-    total_height = max(600, n * 32 + 380)
+    total_height = max(600, n * 36 + 380)
 
     fig = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
-        row_heights=[n * 32, 340],
+        row_heights=[n * 36, 340],
         vertical_spacing=0.04,
         subplot_titles=['Ventile', 'Analogwerte'],
     )
 
-    # --- Ventile: Gantt-Balken via tonexty ---
+    # --- Ventile: Rechteck-Balken ---
     for i, col in enumerate(valves):
         color = _VALVE_COLORS[i % len(_VALVE_COLORS)]
-        x = df.index
-        baseline = [i] * len(df)
-        signal = (df[col].fillna(0) * _BAR + i).tolist()
-        state = df[col].fillna(0).astype(int).map({0: 'AUS', 1: 'EIN'})
+        periods = _on_periods(df[col])
 
-        # Unsichtbare Basislinie als tonexty-Referenz
-        fig.add_trace(go.Scatter(
-            x=x, y=baseline, mode='lines',
-            line=dict(width=0), showlegend=False, hoverinfo='skip',
-        ), row=1, col=1)
+        if periods:
+            fig.add_trace(_rect_trace(periods, i, color, col), row=1, col=1)
+            fig.add_trace(_hover_trace(df[col], i, col, show_legend=False), row=1, col=1)
+        else:
+            fig.add_trace(_hover_trace(df[col], i, col, show_legend=True), row=1, col=1)
 
-        fig.add_trace(go.Scatter(
-            x=x, y=signal, mode='lines',
-            line=dict(shape='hv', width=0.5, color=color),
-            fill='tonexty', fillcolor=color,
-            name=col,
-            customdata=state,
-            hovertemplate='%{customdata}<extra>' + col + '</extra>',
-        ), row=1, col=1)
-
-    # --- Analogwerte: Linien ---
+    # --- Analogwerte: ein gemeinsamer Graph ---
     for i, col in enumerate(analogs):
         color = _ANALOG_COLORS[i % len(_ANALOG_COLORS)]
         fig.add_trace(go.Scatter(
@@ -82,9 +105,9 @@ def build_figure(df: pd.DataFrame, valves: list[str], analogs: list[str]) -> go.
     )
 
     fig.update_yaxes(
-        tickvals=[i + _BAR / 2 for i in range(n)],
+        tickvals=[i + _PAD + _ROW_H / 2 for i in range(n)],
         ticktext=valves,
-        range=[-0.15, n + 0.15],
+        range=[-0.1, n + 0.1],
         showgrid=False, zeroline=False,
         row=1, col=1,
     )
