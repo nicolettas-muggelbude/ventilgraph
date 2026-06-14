@@ -12,20 +12,28 @@ Zoombare Zeitreihen-Darstellung von Ventilzuständen und Analogwerten mit Export
 
 ## Installation & Start
 
-### Windows (Doppelklick)
+### Windows
 
+**Einmalig bei der ersten Einrichtung:**
 1. Repo herunterladen: grüner **Code**-Button → **Download ZIP** → entpacken  
    *(oder `git clone https://github.com/nicolettas-muggelbude/ventilgraph.git`)*
-2. `start.bat` doppelklicken
+2. `install.bat` doppelklicken — installiert alle Abhängigkeiten (~1 Minute)
 
-Beim ersten Start werden alle Abhängigkeiten automatisch installiert (~1 Minute).  
-Danach öffnet sich der Browser mit der App. Die Verknüpfung kann auf den Desktop oder die Taskleiste gezogen werden.
+**Täglich:**
+- `start.bat` doppelklicken → Browser öffnet sich automatisch
 
 ### Linux / macOS
 
+**Einmalig:**
 ```bash
 git clone https://github.com/nicolettas-muggelbude/ventilgraph.git
 cd ventilgraph
+chmod +x install.sh start.sh
+./install.sh
+```
+
+**Täglich:**
+```bash
 ./start.sh
 ```
 
