@@ -1,15 +1,29 @@
 @echo off
-REM Ventilgraph starten (Windows)
+setlocal enabledelayedexpansion
+title Ventilgraph
 
-if not exist ".venv" (
-    echo Virtuelle Umgebung wird erstellt...
-    python -m venv .venv
+:: Läuft der Server bereits?
+powershell -Command "try{(Invoke-WebRequest http://localhost:8050/ -UseBasicParsing -TimeoutSec 1).StatusCode}catch{0}" | find "200" >nul 2>&1
+if %errorlevel%==0 (
+    echo Server laeuft bereits - Browser wird geoeffnet.
+    start http://localhost:8050
+    exit /b 0
 )
 
-call .venv\Scripts\activate
+echo Ventilgraph startet...
+start /min "Ventilgraph" wsl -d Ubuntu-24.04 -- bash -c "cd /home/nicole/projekte/ventilgraph && .venv/bin/python app.py"
 
-echo Abhaengigkeiten pruefen...
-pip install -q -r requirements.txt
+:: Warten bis Server antwortet (max. 30 Sekunden)
+set /a i=0
+:wait
+    set /a i+=1
+    if !i! gtr 30 (
+        echo FEHLER: Server antwortet nicht. Fenster pruefen.
+        pause
+        exit /b 1
+    )
+    timeout /t 1 /nobreak >nul
+    powershell -Command "try{(Invoke-WebRequest http://localhost:8050/ -UseBasicParsing -TimeoutSec 1).StatusCode}catch{0}" | find "200" >nul 2>&1
+if not %errorlevel%==0 goto wait
 
-echo App startet auf http://localhost:8050
-python app.py
+start http://localhost:8050
