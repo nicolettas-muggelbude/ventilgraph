@@ -26,8 +26,8 @@ def _dedupe(names: list[str]) -> list[str]:
     return result
 
 
-def load_data(path: str) -> pd.DataFrame:
-    """Lädt SPS-Export-CSV und gibt DataFrame mit DatetimeIndex zurück."""
+def load_data(path) -> pd.DataFrame:
+    """Lädt SPS-Export-CSV (Pfad oder BytesIO) und gibt DataFrame mit DatetimeIndex zurück."""
     df = pd.read_csv(
         path,
         sep=';',
