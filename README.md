@@ -7,30 +7,26 @@ Zoombare Zeitreihen-Darstellung von Ventilzuständen und Analogwerten mit Export
 
 ## Voraussetzungen
 
-- Python 3.10 oder neuer
+- Python 3.10 oder neuer → [python.org/downloads](https://www.python.org/downloads/)  
+  ⚠️ Beim Installieren **"Add Python to PATH"** aktivieren
 
 ## Installation & Start
+
+### Windows (Doppelklick)
+
+1. Repo herunterladen: grüner **Code**-Button → **Download ZIP** → entpacken  
+   *(oder `git clone https://github.com/nicolettas-muggelbude/ventilgraph.git`)*
+2. `start.bat` doppelklicken
+
+Beim ersten Start werden alle Abhängigkeiten automatisch installiert (~1 Minute).  
+Danach öffnet sich der Browser mit der App. Die Verknüpfung kann auf den Desktop oder die Taskleiste gezogen werden.
 
 ### Linux / macOS
 
 ```bash
 git clone https://github.com/nicolettas-muggelbude/ventilgraph.git
 cd ventilgraph
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python app.py
-```
-
-### Windows
-
-```bat
-git clone https://github.com/nicolettas-muggelbude/ventilgraph.git
-cd ventilgraph
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
+./start.sh
 ```
 
 Danach im Browser öffnen: **http://localhost:8050**
