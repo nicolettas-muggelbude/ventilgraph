@@ -59,6 +59,16 @@ Die App startet mit einer Demo-Datei. Eigene SPS-Exporte lassen sich über den *
 | Doppelklick | Zoom zurücksetzen |
 | 📷 Ausschnitt exportieren | Aktuellen Ausschnitt als PNG speichern |
 
+## Analysefokus
+
+Unterhalb des Headers befinden sich zwei Dropdowns:
+
+- **Ventile** — welche Ventile im oberen Panel angezeigt werden
+- **Analogwerte** — welche Messwerte im unteren Graphen angezeigt werden
+
+Einfach gewünschte Signale auswählen, der Graph aktualisiert sich sofort.  
+Beispiel: nur *Leitfähigkeit* + *Ventil Wasser* + *Ventil Gully* — so ist auf einen Blick erkennbar, wann der Leitwert fällt und welches Ventil dafür verantwortlich ist.
+
 ## Lizenz
 
 MIT License — siehe [LICENSE](LICENSE)

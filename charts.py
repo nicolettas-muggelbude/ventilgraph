@@ -68,7 +68,7 @@ def build_figure(df: pd.DataFrame, valves: list[str], analogs: list[str]) -> go.
     fig = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
-        row_heights=[n * 36, 340],
+        row_heights=[max(n * 36, 10), 340],
         vertical_spacing=0.04,
         subplot_titles=['Ventile', 'Analogwerte'],
     )
