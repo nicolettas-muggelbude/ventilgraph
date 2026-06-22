@@ -1,9 +1,7 @@
 # Ventilgraph
 
 Interaktive Visualisierung von SPS-Prozessdaten einer CIP-Anlage.  
-Zoombare Zeitreihen-Darstellung von Ventilzuständen und Analogwerten mit Export-Funktion.
-
-![Ventilgraph Screenshot](assets/screenshot.png)
+Ventilzustände als Gantt-Balken, Analogwerte (Temperatur, Leitfähigkeit, Füllstände) als Liniendiagramm — zoombar und exportierbar.
 
 ## Voraussetzungen
 
@@ -38,6 +36,15 @@ chmod +x install.sh start.sh
 ```
 
 Danach im Browser öffnen: **http://localhost:8050**
+
+## Updates einspielen
+
+```bash
+git pull
+./start.sh   # bzw. start.bat — startet den Server automatisch neu
+```
+
+Der laufende Server wird beim Start automatisch beendet, neue Version wird sofort aktiv.
 
 ## CSV-Datei laden
 
