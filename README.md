@@ -70,7 +70,7 @@ Die App startet mit einer Demo-Datei. Eigene SPS-Exporte lassen sich über den *
 
 Unterhalb des Headers befinden sich zwei Dropdowns:
 
-- **Ventile** — welche Ventile im oberen Panel angezeigt werden
+- **Ventile** - welche Ventile im oberen Panel angezeigt werden
 - **Analogwerte** — welche Messwerte im unteren Graphen angezeigt werden
 
 Einfach gewünschte Signale auswählen, der Graph aktualisiert sich sofort.  
